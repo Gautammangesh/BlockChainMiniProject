@@ -11,6 +11,7 @@ contract MedicalRecords {
     }
 
     mapping(uint256 => Record) public records;
+    mapping(address => uint256[]) public patientRecordIds;
     mapping(address => mapping(address => bool)) public accessAllowed;
     mapping(address => bool) public doctors;
     mapping(address => bool) public admins;
@@ -56,7 +57,17 @@ contract MedicalRecords {
         require(accessAllowed[patient][msg.sender], "Access not granted by patient");
         recordCount += 1;
         records[recordCount] = Record(patient, msg.sender, ipfsHash, description, block.timestamp);
+        patientRecordIds[patient].push(recordCount);
         emit RecordUploaded(recordCount, patient, msg.sender, ipfsHash);
+    }
+
+    function getPatientRecords(address patient) external view returns (Record[] memory) {
+        uint256[] memory ids = patientRecordIds[patient];
+        Record[] memory patientRecords = new Record[](ids.length);
+        for (uint256 i = 0; i < ids.length; i++) {
+            patientRecords[i] = records[ids[i]];
+        }
+        return patientRecords;
     }
 
     function canView(address patient, address doctor) external view returns (bool) {
