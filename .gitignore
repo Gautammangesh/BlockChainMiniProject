@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# env
+.env
+.env.*
+
+# build artifacts
+dist/
+build/
+coverage/
+
+# Hardhat
+artifacts/
+cache/
+typechain/
+
+# logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

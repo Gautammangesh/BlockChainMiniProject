@@ -1,0 +1,16 @@
+{
+  "name": "medical-dapp-backend",
+  "version": "1.0.0",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "ethers": "^5.7.2",
+    "express": "^4.19.2",
+    "ipfs-http-client": "^60.0.1"
+  }
+}
