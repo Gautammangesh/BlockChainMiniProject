@@ -1,84 +1,85 @@
-# Medical Records DApp
+# 🛡️ HeartCare AI: Decentralized Medical Records
 
-## Project Title
-Design and Development of a Blockchain-Based Medical Records Management System using Ethereum and IPFS
+A premium, secure, and transparent Decentralized Application (DApp) for managing medical records using **Ethereum Blockchain** and **IPFS Storage**. 
 
-## Purpose
-This project implements a decentralized application (DApp) for secure medical record management. It uses Ethereum smart contracts for access control and IPFS for decentralized file storage. The backend API layer handles IPFS and blockchain calls, while the frontend provides the user interface.
+This project empowers patients with absolute control over their health data while providing doctors with a seamless, blockchain-verified medical registry.
 
-## Architecture
-Frontend (React) -> Backend API (Node.js) -> Blockchain (Ethereum Smart Contract) -> IPFS (File Storage)
+## ✨ Key Features
 
-## Folder Structure
-- `smart-contract/`
-  - `contracts/`
-    - `MedicalRecords.sol` -- Solidity smart contract for patient records and permissions.
-  - `scripts/`
-    - `deploy.js` -- deployment helper for contracts.
-  - `hardhat.config.js` -- Hardhat configuration.
-- `backend/`
-  - `controllers/`
-    - `recordController.js` -- request handlers for upload and fetch.
-  - `routes/`
-    - `recordRoutes.js` -- API endpoints.
-  - `services/`
-    - `ipfsService.js` -- IPFS client logic.
-    - `blockchainService.js` -- contract calls.
-    - `abi.json` -- contract ABI placeholder.
-  - `app.js` -- Express app entry.
-  - `package.json` -- backend dependencies.
-- `frontend/`
-  - `package.json` -- frontend dependencies and scripts.
-  - `index.html` -- React app entry page.
-  - `src/`
-    - `main.jsx` -- app bootstrap.
-    - `App.jsx` -- main UI layout.
-    - `App.js` -- App alias for reference.
-    - `index.js` -- index alias for reference.
-    - `components/`
-      - `Upload.jsx` -- upload UI.
-      - `View.jsx` -- view records UI.
-      - `Access.jsx` -- grant/revoke UI.
-    - `services/`
-      - `api.js` -- backend API client.
-    - `abi/` -- compiled contract ABI placeholder.
-    - `utils/` -- blockchain + IPFS helper modules.
+- **🔐 Privacy First**: Only authorized doctors can upload or view patient records.
+- **📜 Smart Contract Security**: Role-based access control (RBAC) managed by Solidity contracts.
+- **📁 Decentralized Storage**: Medical documents are stored on IPFS, ensuring data permanence and integrity.
+- **🌓 Premium UI/UX**: Dual-theme system (Light/Dark mode) with a "Soft Paper" premium aesthetic.
+- **📱 Responsive Design**: Fully optimized Glassmorphism interface for all devices.
+- **🔄 State-of-the-art Navigation**: Integrated "Role Switching" without wallet disconnection.
 
-## Implementation Plan
-1. Setup development environment
-   - Install Node.js and npm.
-   - Install MetaMask browser extension.
-   - Install Hardhat or Remix for Solidity compilation and deployment.
+---
 
-2. Create smart contract
-   - `smart-contract/contracts/MedicalRecords.sol`
-   - Define roles: patient, doctor, admin.
-   - Store record metadata, IPFS hash, access permissions.
+## 🛠️ Technology Stack
 
-3. Setup backend API
-   - Initialize Node.js app in `backend/`.
-   - Add IPFS upload service.
-   - Add blockchain service for contract calls.
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | React.js, Ethers.js, CSS3 (Glassmorphism) |
+| **Backend** | Node.js, Express.js |
+| **Blockchain** | Solidity, Hardhat |
+| **Storage** | IPFS (InterPlanetary File System) |
+| **Wallet** | MetaMask |
 
-4. Setup frontend
-   - Initialize React app in `frontend/`.
-   - Add `ethers` for blockchain interaction.
-   - Add API client to call backend.
+---
 
-5. Implement workflow
-   - Doctor uploads file -> encrypts locally -> IPFS stores file -> returns hash.
-   - Backend stores metadata and grant access using smart contract.
-   - Patient views uploaded records and grants/revokes access.
-   - Authorized doctor reads the record hash and fetches the file from IPFS.
+## 🚀 Quick Start
 
-6. Test and deploy
-   - Test locally on Hardhat/Goerli.
-   - Deploy contract.
-   - Connect backend and frontend to deployed contract address.
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Gautammangesh/BlockChainMiniProject.git
+cd BlockChainMiniProject
+```
 
-## Next Steps
-- Complete the smart contract logic.
-- Build the React UI screens.
-- Integrate IPFS upload and encrypted storage.
-- Test full doctor/patient access flow.
-# BlockChainMiniProject
+### 2. Smart Contract Setup (Hardhat)
+```bash
+cd smart-contract
+npm install
+npx hardhat node
+# In a new terminal, deploy the contract:
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+### 3. Backend Setup
+```bash
+cd backend
+npm install
+# Configure your .env (Add IPFS keys if available)
+npm run dev
+```
+
+### 4. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 📖 User Workflow
+
+1.  **Patient Login**: Connect MetaMask and select the "Patient Portal".
+2.  **Grant Access**: Enter a Doctor's wallet address to authorize them to manage your records.
+3.  **Doctor Login**: Switch account in MetaMask and select "Medical Provider".
+4.  **Upload**: Upload a PDF/Image for the authorized patient. The file is anchored to IPFS and the hash is stored on the Blockchain.
+5.  **View**: The Patient can instantly see the new record in their "Health Records" vault with a timestamped digital certificate.
+
+---
+
+## 🌓 Theming System
+
+The app features a custom CSS variable-based theming system. Toggle between **Midnight Deep** and **Soft Paper** using the moon/sun icon in the navigation bar. Your preference is persisted across sessions using `localStorage`.
+
+---
+
+## 📝 License
+This project is open-source and available under the MIT License.
+
+---
+
+**Developed with ❤️ for Advanced Blockchain Research.**
