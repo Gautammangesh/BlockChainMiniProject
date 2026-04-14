@@ -77,9 +77,4 @@ The app features a custom CSS variable-based theming system. Toggle between **Mi
 
 ---
 
-## 📝 License
-This project is open-source and available under the MIT License.
-
----
-
 **Developed with ❤️ for Advanced Blockchain Research.**
