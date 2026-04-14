@@ -21,7 +21,15 @@ exports.uploadRecord = async (req, res) => {
 exports.getRecords = async (req, res) => {
   try {
     const data = await fetchRecords(req.params.address);
-    res.json(data);
+    // Convert ethers result (with numeric/named keys) to clean objects for JSON serialization
+    const formattedData = data.map(record => ({
+      patient: record.patient,
+      doctor: record.doctor,
+      ipfsHash: record.ipfsHash,
+      description: record.description,
+      timestamp: record.timestamp.toString(),
+    }));
+    res.json(formattedData);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

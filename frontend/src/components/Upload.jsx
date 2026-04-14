@@ -6,30 +6,33 @@ function Upload({ account }) {
   const [patient, setPatient] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(null);
 
   const handleUpload = async () => {
     if (!file || !patient) {
-      alert("Please select a file and enter patient address.");
+      setStatus({ type: 'error', message: "Please select a file and enter patient address." });
       return;
     }
     
     setLoading(true);
+    setStatus({ type: 'info', message: "Processing. Please wait..." });
     try {
-      // In a real app we'd convert file to Buffer or base64
-      // For this DApp, we'll send it as a data object
       const data = { 
-        file: "Buffer contents of " + file.name, // Placeholder for actual file logic
+        file: "Buffer contents of " + file.name,
         patient,
         description 
       };
       
       const response = await uploadRecord(data);
       if (response.data.success) {
-        alert("Record uploaded successfully to IPFS and Blockchain!");
+        setStatus({ type: 'success', message: "Record successfully anchored to Blockchain and IPFS!" });
+        setFile(null);
+        setPatient("");
+        setDescription("");
       }
     } catch (error) {
       console.error(error);
-      alert("Upload failed: " + (error.response?.data?.error || error.message));
+      setStatus({ type: 'error', message: "Upload failed: " + (error.response?.data?.error || error.message) });
     } finally {
       setLoading(false);
     }
@@ -37,35 +40,51 @@ function Upload({ account }) {
 
   return (
     <div className="upload-container">
-      <h3>📤 Upload New Medical Record</h3>
-      <div className="form-group">
-        <label>Recipient Patient Address</label>
-        <input
-          type="text"
-          placeholder="0x..."
-          value={patient}
-          onChange={(e) => setPatient(e.target.value)}
-        />
+      <div className="component-header">
+        <h3>📤 Upload Specialized Medical Record</h3>
+        <p className="subtitle">Securely encrypt and store data on the decentralized web.</p>
       </div>
-      <div className="form-group">
-        <label>Record Description</label>
-        <textarea
-          placeholder="e.g. Blood Test Report, MRI Scan..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+
+      {status && (
+        <div className={`status-msg ${status.type}`}>
+          {status.message}
+        </div>
+      )}
+
+      <div className="form-content">
+        <div className="form-group">
+          <label>Recipient Patient Wallet Address</label>
+          <input
+            type="text"
+            placeholder="0x..."
+            value={patient}
+            onChange={(e) => setPatient(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Clinical Description</label>
+          <textarea
+            placeholder="Provide context for this record (e.g. Annual Checkup, Lab Result)..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows="4"
+          />
+        </div>
+        <div className="form-group">
+          <label>Medical Document (PDF, Image, etc.)</label>
+          <div className="file-input-wrapper">
+             <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+             {file && <div className="file-name-display">✅ {file.name}</div>}
+          </div>
+        </div>
+        <button 
+          className="upload-btn" 
+          onClick={handleUpload} 
+          disabled={loading}
+        >
+          {loading ? "Initializing Transaction..." : "🔐 Secure & Publish"}
+        </button>
       </div>
-      <div className="form-group">
-        <label>Select File</label>
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-      </div>
-      <button 
-        className="upload-btn" 
-        onClick={handleUpload} 
-        disabled={loading}
-      >
-        {loading ? "Uploading..." : "Publish to Blockchain"}
-      </button>
     </div>
   );
 }

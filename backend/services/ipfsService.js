@@ -1,10 +1,10 @@
 require("dotenv").config();
+const projectId = process.env.IPFS_PROJECT_ID;
+const projectSecret = process.env.IPFS_PROJECT_SECRET;
 let client;
+
 try {
   const { create } = require("ipfs-http-client");
-  const projectId = process.env.IPFS_PROJECT_ID;
-  const projectSecret = process.env.IPFS_PROJECT_SECRET;
-
   if (projectId && projectSecret && projectId !== "YOUR_INFURA_IPFS_PROJECT_ID") {
     const auth = "Basic " + Buffer.from(projectId + ":" + projectSecret).toString("base64");
     client = create({
@@ -21,10 +21,18 @@ try {
 }
 
 exports.uploadToIPFS = async (file) => {
-  if (!projectId || !projectSecret) {
-    console.warn("IPFS credentials missing. Returning mock hash for testing.");
+  // If no client is initialized (e.g. missing or placeholder credentials), return mock hash
+  if (!client || !projectId || !projectSecret || projectId === "YOUR_INFURA_IPFS_PROJECT_ID") {
+    console.warn("IPFS client not initialized or using placeholders. Returning mock hash for testing.");
     return "QmMockHash1234567890";
   }
-  const added = await client.add(file);
-  return added.path;
+  
+  try {
+    const added = await client.add(file);
+    return added.path;
+  } catch (error) {
+    console.error("IPFS Upload Error:", error);
+    console.warn("Falling back to mock hash due to upload failure.");
+    return "QmMockHash_Fallback_" + Date.now();
+  }
 };

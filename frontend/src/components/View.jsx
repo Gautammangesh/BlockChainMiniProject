@@ -1,54 +1,65 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getRecords } from "../services/api";
 
 function View({ account, role }) {
   const [records, setRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [targetAddress, setTargetAddress] = useState(account);
+  const [error, setError] = useState(null);
 
-  const fetchPatientRecords = async () => {
+  const fetchPatientRecords = useCallback(async () => {
+    if (!targetAddress) return;
     setLoading(true);
+    setError(null);
     try {
       const addr = role === 'doctor' ? targetAddress : account;
       const response = await getRecords(addr);
       setRecords(response.data);
     } catch (error) {
       console.error(error);
+      setError("Failed to retrieve records. Ensure you have the necessary permissions.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [account, role, targetAddress]);
 
   useEffect(() => {
     if (role === 'patient') {
       fetchPatientRecords();
     }
-  }, [account]);
+  }, [account, role, fetchPatientRecords]);
 
   return (
     <div className="view-container">
-      <h3>📂 {role === 'doctor' ? "Patient Health Records" : "My Medical History"}</h3>
+      <div className="component-header">
+        <h3>📂 {role === 'doctor' ? "Patient Vault Records" : "Personal Health Records"}</h3>
+        <p className="subtitle">Secure records retrieved directly from the blockchain registry.</p>
+      </div>
       
       {role === 'doctor' && (
         <div className="search-bar">
           <input 
             type="text" 
-            placeholder="Enter Patient Address"
+            placeholder="Search Patient Wallet Address (0x...)"
             value={targetAddress}
             onChange={(e) => setTargetAddress(e.target.value)}
           />
-          <button onClick={fetchPatientRecords}>Fetch</button>
+          <button onClick={fetchPatientRecords} disabled={loading}>
+            {loading ? "Searching..." : "Fetch Records"}
+          </button>
         </div>
       )}
 
+      {error && <div className="status-msg error">{error}</div>}
+
       {loading ? (
-        <div className="loader">Searching blockchain...</div>
+        <div className="loader">Querying distributed registry...</div>
       ) : records.length > 0 ? (
         <div className="records-grid">
           {records.map((rec, index) => (
             <div key={index} className="record-card">
               <div className="record-header">
-                <strong>ID: #{index + 1}</strong>
+                <strong>Record #{index + 1}</strong>
                 <span className="date">{new Date(Number(rec.timestamp) * 1000).toLocaleDateString()}</span>
               </div>
               <p className="description">{rec.description}</p>
@@ -59,14 +70,17 @@ function View({ account, role }) {
                   rel="noreferrer"
                   className="view-link"
                 >
-                  📄 View Document
+                  <span className="icon">📄</span> View Document
                 </a>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="empty-state">No medical records found for this address.</div>
+        !error && <div className="empty-state">
+          <div className="icon">📭</div>
+          <p>No medical records found for this identity.</p>
+        </div>
       )}
     </div>
   );

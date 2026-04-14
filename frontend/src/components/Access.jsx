@@ -5,10 +5,15 @@ import artifacts from "../abi/MedicalRecords.json";
 function Access({ account, provider }) {
   const [doctorAddr, setDoctorAddr] = useState("");
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(null);
 
   const handleAccess = async (action) => {
-    if (!doctorAddr) return;
+    if (!doctorAddr) {
+      setStatus({ type: 'error', message: "Please enter a doctor's wallet address." });
+      return;
+    }
     setLoading(true);
+    setStatus({ type: 'info', message: `Initializing ${action} access transaction...` });
     try {
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(artifacts.address, artifacts.abi, signer);
@@ -17,11 +22,12 @@ function Access({ account, provider }) {
         ? await contract.grantAccess(doctorAddr)
         : await contract.revokeAccess(doctorAddr);
       
-      await tx.wait();
-      alert(`Access ${action}ed successfully!`);
+      const receipt = await tx.wait();
+      setStatus({ type: 'success', message: `Permissions ${action}ed successfully! Block: ${receipt.blockNumber}` });
+      setDoctorAddr("");
     } catch (error) {
       console.error(error);
-      alert("Transaction failed: " + error.message);
+      setStatus({ type: 'error', message: "Transaction failed: " + (error.reason || error.message) });
     } finally {
       setLoading(false);
     }
@@ -29,30 +35,41 @@ function Access({ account, provider }) {
 
   return (
     <div className="access-container">
-      <h3>🔑 Medical Data Access Control</h3>
-      <p>Grant or revoke specific doctors' permission to view and upload your medical records.</p>
-      
+      <div className="component-header">
+        <h3>🔑 Access Control Management</h3>
+        <p className="subtitle">Grant or revoke specific providers' permission to your medical vault.</p>
+      </div>
+
+      {status && (
+        <div className={`status-msg ${status.type}`}>
+          {status.message}
+        </div>
+      )}
+
       <div className="access-form">
-        <input
-          type="text"
-          placeholder="Enter Doctor Wallet Address (0x...)"
-          value={doctorAddr}
-          onChange={(e) => setDoctorAddr(e.target.value)}
-        />
+        <div className="form-group">
+          <label>Doctor's Wallet Address</label>
+          <input
+            type="text"
+            placeholder="0x..."
+            value={doctorAddr}
+            onChange={(e) => setDoctorAddr(e.target.value)}
+          />
+        </div>
         <div className="button-group">
           <button 
             className="grant-btn" 
             onClick={() => handleAccess('grant')}
             disabled={loading}
           >
-            {loading ? "Processing..." : "Grant Access"}
+            {loading ? "Processing..." : "✔️ Grant Access"}
           </button>
           <button 
             className="revoke-btn" 
             onClick={() => handleAccess('revoke')}
             disabled={loading}
           >
-            {loading ? "Processing..." : "Revoke Access"}
+            {loading ? "Processing..." : "❌ Revoke Access"}
           </button>
         </div>
       </div>
