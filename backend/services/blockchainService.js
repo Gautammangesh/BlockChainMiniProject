@@ -6,21 +6,24 @@ try {
   artifacts = { address: "", abi: [] };
 }
 
-const RPC_URL = process.env.RPC_URL || "http://127.0.0.1:8545";
+const RPC_URL = process.env.RPC_URL || "http://127.0.0.1:7545";
 const CONTRACT_ADDRESS = artifacts.address;
 
 const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-// For backend server calls, we typically use a defined signer/wallet.
-// But for local hardhat testing, provider.getSigner() works if it's the node's account.
-const signer = provider.getSigner();
-
-const contract = new ethers.Contract(CONTRACT_ADDRESS, artifacts.abi, signer);
-
-exports.addRecord = async (patient, hash, description) => {
-  const tx = await contract.uploadRecord(patient, hash, description);
-  return await tx.wait();
-};
+const contract = new ethers.Contract(CONTRACT_ADDRESS, artifacts.abi, provider);
 
 exports.fetchRecords = async (patient) => {
-  return await contract.getPatientRecords(patient);
+  return await contract.getPatientEntries(patient, { from: patient });
+};
+
+exports.fetchPendingRequests = async (patient) => {
+  return await contract.getPendingRequests(patient, { from: patient });
+};
+
+exports.fetchPatientRequests = async (patient) => {
+  return await contract.getPatientRequests(patient, { from: patient });
+};
+
+exports.fetchAccessStatus = async (patient, doctor) => {
+  return await contract.isAuthorized(patient, doctor);
 };

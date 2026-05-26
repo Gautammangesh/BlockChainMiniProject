@@ -6,14 +6,14 @@ async function main() {
   const [deployer] = await hre.ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const MedicalRecords = await hre.ethers.getContractFactory('MedicalRecords');
-  const contract = await MedicalRecords.deploy();
+  const MediChainConsent = await hre.ethers.getContractFactory('MediChainConsent');
+  const contract = await MediChainConsent.deploy();
 
   // Ethers v6 usage
   await contract.waitForDeployment();
   const address = await contract.getAddress();
 
-  console.log('MedicalRecords deployed to:', address);
+  console.log('MediChainConsent deployed to:', address);
 
   // Export artifacts
   const artifacts = {

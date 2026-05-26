@@ -21,6 +21,15 @@ try {
 }
 
 exports.uploadToIPFS = async (file) => {
+  let filePayload = file;
+
+  if (typeof file === "string" && file.startsWith("data:")) {
+    const base64Data = file.split(",")[1];
+    if (base64Data) {
+      filePayload = Buffer.from(base64Data, "base64");
+    }
+  }
+
   // If no client is initialized (e.g. missing or placeholder credentials), return mock hash
   if (!client || !projectId || !projectSecret || projectId === "YOUR_INFURA_IPFS_PROJECT_ID") {
     console.warn("IPFS client not initialized or using placeholders. Returning mock hash for testing.");
@@ -28,7 +37,7 @@ exports.uploadToIPFS = async (file) => {
   }
   
   try {
-    const added = await client.add(file);
+    const added = await client.add(filePayload);
     return added.path;
   } catch (error) {
     console.error("IPFS Upload Error:", error);

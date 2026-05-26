@@ -1,16 +1,32 @@
 {
-  "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "address": "0xECAbDB1a5EEd899394B37930987D9A23a16D6875",
   "abi": [
     {
-      "type": "constructor",
-      "stateMutability": "undefined",
-      "payable": false,
-      "inputs": []
+      "type": "event",
+      "anonymous": false,
+      "name": "AccessRequested",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "doctor",
+          "indexed": true
+        },
+        {
+          "type": "address",
+          "name": "patient",
+          "indexed": true
+        },
+        {
+          "type": "string",
+          "name": "message",
+          "indexed": false
+        }
+      ]
     },
     {
       "type": "event",
       "anonymous": false,
-      "name": "AccessGranted",
+      "name": "AccessResponded",
       "inputs": [
         {
           "type": "address",
@@ -21,6 +37,11 @@
           "type": "address",
           "name": "doctor",
           "indexed": true
+        },
+        {
+          "type": "bool",
+          "name": "approved",
+          "indexed": false
         }
       ]
     },
@@ -44,11 +65,33 @@
     {
       "type": "event",
       "anonymous": false,
-      "name": "RecordUploaded",
+      "name": "DoctorRegistered",
       "inputs": [
         {
-          "type": "uint256",
-          "name": "recordId",
+          "type": "address",
+          "name": "doctor",
+          "indexed": true
+        },
+        {
+          "type": "string",
+          "name": "name",
+          "indexed": false
+        },
+        {
+          "type": "string",
+          "name": "specialty",
+          "indexed": false
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "anonymous": false,
+      "name": "MedicalEntryAdded",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "doctor",
           "indexed": true
         },
         {
@@ -57,20 +100,42 @@
           "indexed": true
         },
         {
-          "type": "address",
-          "name": "doctor",
-          "indexed": true
+          "type": "string",
+          "name": "entryType",
+          "indexed": false
         },
         {
           "type": "string",
           "name": "ipfsHash",
+          "indexed": false
+        },
+        {
+          "type": "string",
+          "name": "title",
+          "indexed": false
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "anonymous": false,
+      "name": "PatientRegistered",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "patient",
+          "indexed": true
+        },
+        {
+          "type": "string",
+          "name": "name",
           "indexed": false
         }
       ]
     },
     {
       "type": "function",
-      "name": "accessAllowed",
+      "name": "accessRequests",
       "constant": true,
       "stateMutability": "view",
       "payable": false,
@@ -86,48 +151,27 @@
       ],
       "outputs": [
         {
-          "type": "bool",
-          "name": ""
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "addDoctor",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        {
           "type": "address",
           "name": "doctor"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "admins",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [
+        },
         {
-          "type": "address",
-          "name": ""
-        }
-      ],
-      "outputs": [
+          "type": "string",
+          "name": "message"
+        },
         {
-          "type": "bool",
-          "name": ""
+          "type": "uint8",
+          "name": "status"
+        },
+        {
+          "type": "uint256",
+          "name": "timestamp"
         }
       ]
     },
     {
       "type": "function",
-      "name": "canView",
-      "constant": true,
-      "stateMutability": "view",
+      "name": "addMedicalEntry",
+      "constant": false,
       "payable": false,
       "inputs": [
         {
@@ -135,16 +179,23 @@
           "name": "patient"
         },
         {
-          "type": "address",
-          "name": "doctor"
+          "type": "string",
+          "name": "entryType"
+        },
+        {
+          "type": "string",
+          "name": "ipfsHash"
+        },
+        {
+          "type": "string",
+          "name": "title"
+        },
+        {
+          "type": "string",
+          "name": "notes"
         }
       ],
-      "outputs": [
-        {
-          "type": "bool",
-          "name": ""
-        }
-      ]
+      "outputs": []
     },
     {
       "type": "function",
@@ -160,14 +211,22 @@
       ],
       "outputs": [
         {
+          "type": "string",
+          "name": "name"
+        },
+        {
+          "type": "string",
+          "name": "specialty"
+        },
+        {
           "type": "bool",
-          "name": ""
+          "name": "registered"
         }
       ]
     },
     {
       "type": "function",
-      "name": "getPatientRecords",
+      "name": "getPatientEntries",
       "constant": true,
       "stateMutability": "view",
       "payable": false,
@@ -184,11 +243,15 @@
           "components": [
             {
               "type": "address",
-              "name": "patient"
+              "name": "doctor"
             },
             {
               "type": "address",
-              "name": "doctor"
+              "name": "patient"
+            },
+            {
+              "type": "string",
+              "name": "entryType"
             },
             {
               "type": "string",
@@ -196,7 +259,11 @@
             },
             {
               "type": "string",
-              "name": "description"
+              "name": "title"
+            },
+            {
+              "type": "string",
+              "name": "notes"
             },
             {
               "type": "uint256",
@@ -208,67 +275,85 @@
     },
     {
       "type": "function",
-      "name": "grantAccess",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        {
-          "type": "address",
-          "name": "doctor"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "patientRecordIds",
+      "name": "getPatientRequests",
       "constant": true,
       "stateMutability": "view",
       "payable": false,
       "inputs": [
         {
           "type": "address",
-          "name": ""
-        },
-        {
-          "type": "uint256",
-          "name": ""
+          "name": "patient"
         }
       ],
       "outputs": [
         {
-          "type": "uint256",
-          "name": ""
+          "type": "tuple[]",
+          "name": "",
+          "components": [
+            {
+              "type": "address",
+              "name": "doctor"
+            },
+            {
+              "type": "string",
+              "name": "message"
+            },
+            {
+              "type": "uint8",
+              "name": "status"
+            },
+            {
+              "type": "uint256",
+              "name": "timestamp"
+            }
+          ]
         }
       ]
     },
     {
       "type": "function",
-      "name": "recordCount",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "uint256",
-          "name": ""
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "records",
+      "name": "getPendingRequests",
       "constant": true,
       "stateMutability": "view",
       "payable": false,
       "inputs": [
         {
-          "type": "uint256",
-          "name": ""
+          "type": "address",
+          "name": "patient"
         }
       ],
       "outputs": [
+        {
+          "type": "tuple[]",
+          "name": "",
+          "components": [
+            {
+              "type": "address",
+              "name": "doctor"
+            },
+            {
+              "type": "string",
+              "name": "message"
+            },
+            {
+              "type": "uint8",
+              "name": "status"
+            },
+            {
+              "type": "uint256",
+              "name": "timestamp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "isAuthorized",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [
         {
           "type": "address",
           "name": "patient"
@@ -276,30 +361,98 @@
         {
           "type": "address",
           "name": "doctor"
-        },
+        }
+      ],
+      "outputs": [
         {
-          "type": "string",
-          "name": "ipfsHash"
-        },
-        {
-          "type": "string",
-          "name": "description"
-        },
-        {
-          "type": "uint256",
-          "name": "timestamp"
+          "type": "bool",
+          "name": ""
         }
       ]
     },
     {
       "type": "function",
-      "name": "removeDoctor",
+      "name": "patients",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [
+        {
+          "type": "address",
+          "name": ""
+        }
+      ],
+      "outputs": [
+        {
+          "type": "string",
+          "name": "name"
+        },
+        {
+          "type": "bool",
+          "name": "registered"
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "registerDoctor",
+      "constant": false,
+      "payable": false,
+      "inputs": [
+        {
+          "type": "string",
+          "name": "name"
+        },
+        {
+          "type": "string",
+          "name": "specialty"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "type": "function",
+      "name": "registerPatient",
+      "constant": false,
+      "payable": false,
+      "inputs": [
+        {
+          "type": "string",
+          "name": "name"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "type": "function",
+      "name": "requestAccess",
+      "constant": false,
+      "payable": false,
+      "inputs": [
+        {
+          "type": "address",
+          "name": "patient"
+        },
+        {
+          "type": "string",
+          "name": "message"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "type": "function",
+      "name": "respondToRequest",
       "constant": false,
       "payable": false,
       "inputs": [
         {
           "type": "address",
           "name": "doctor"
+        },
+        {
+          "type": "bool",
+          "name": "approve"
         }
       ],
       "outputs": []
@@ -313,27 +466,6 @@
         {
           "type": "address",
           "name": "doctor"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "uploadRecord",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        {
-          "type": "address",
-          "name": "patient"
-        },
-        {
-          "type": "string",
-          "name": "ipfsHash"
-        },
-        {
-          "type": "string",
-          "name": "description"
         }
       ],
       "outputs": []
