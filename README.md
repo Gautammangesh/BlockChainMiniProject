@@ -37,6 +37,33 @@ A blockchain-enabled medical records DApp for doctor-patient consent, record sha
 - `frontend/src/abi/MedicalRecords.json` — ABI and deployment data consumed by the UI.
 - `backend/services/abi.json` — contract ABI used by the backend when required.
 
+## IPFS Support
+
+This project supports IPFS for storing file metadata and linking medical entries to content hashes.
+
+What is already implemented:
+
+- `backend/services/ipfsService.js` uploads file data to IPFS using `ipfs-http-client`.
+- `backend/controllers/recordController.js` calls `uploadToIPFS(file)` when records are uploaded.
+- The smart contract stores an `ipfsHash` for each medical entry.
+- When real IPFS is not configured, the backend returns a mock hash for local demo mode.
+
+What you need for real IPFS uploads:
+
+- An IPFS provider account, such as Infura IPFS.
+- `IPFS_PROJECT_ID` and `IPFS_PROJECT_SECRET` set in `backend/.env`.
+- The backend running with environment variables loaded from `.env`.
+- A valid upload flow from the frontend to `backend/api/upload`.
+
+How to enable real IPFS support:
+
+1. Copy `backend/.env.example` to `backend/.env`.
+2. Replace `YOUR_INFURA_IPFS_PROJECT_ID` and `YOUR_INFURA_IPFS_PROJECT_SECRET` with your Infura keys.
+3. Restart the backend server.
+4. Upload a file through the app; the backend will return a real CID instead of `QmMockHash1234567890`.
+
+If credentials are missing, the app still works in demo mode, but the returned IPFS hash is only a placeholder and not resolvable through gateways like `https://ipfs.io/ipfs/`.
+
 ## Quick Start
 
 ### Prerequisites
